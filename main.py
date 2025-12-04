@@ -1,10 +1,14 @@
 """
 Module de calcul pour le projet Druide (Notation Polonaise Inverse).
-Gère les opérations arithmétiques de base via une structure de pile.
+Lit les calculs depuis un fichier texte et affiche les résultats.
 """
 
-# Constante pour éviter l'erreur "Hardcoded password"
+import sys
+
+# Constante pour les opérateurs supportés
 OPERATEURS = "+-*/"
+# Nom du fichier d'entrée par défaut
+FICHIER_INPUT = "calculs.txt"
 
 
 def executer_op(val_a, val_b, operator):
@@ -67,19 +71,36 @@ def calculer_npi(expression):
     return "Erreur : Expression mal formée"
 
 
+def traiter_fichier(chemin):
+    """
+    Lit le fichier ligne par ligne et lance le calcul pour chaque ligne.
+    Gère l'erreur si le fichier n'existe pas.
+    """
+    try:
+        with open(chemin, 'r', encoding='utf-8') as f_in:
+            print(f"--- Lecture du fichier : {chemin} ---")
+            for ligne in f_in:
+                ligne = ligne.strip()
+                if ligne:
+                    res = calculer_npi(ligne)
+                    print(f"Entrée : {ligne:<20} -> Résultat : {res}")
+    except FileNotFoundError:
+        print(f"Erreur critique : Le fichier '{chemin}' est introuvable.")
+    except IOError:
+        print("Erreur critique : Impossible de lire le fichier.")
+
+
 def main():
     """
-    Point d'entrée pour les tests du programme.
+    Point d'entrée. Vérifie si un argument est passé, sinon utilise le défaut.
     """
-    tests = ["3 5 +", "4 7 + 3 *", "3 4 7 + *", "10 4 + 2 /"]
-    print("--- Tests Automatiques ---")
-    for test in tests:
-        res = calculer_npi(test)
-        print(f"Calcul : {test} \t-> {res}")
+    fichier = FICHIER_INPUT
+    
+    # Permet de lancer : python script.py mon_fichier.txt
+    if len(sys.argv) > 1:
+        fichier = sys.argv[1]
 
-    print("\n--- Test Manuel ---")
-    val = input("Entrez votre calcul : ")
-    print(f"Résultat : {calculer_npi(val)}")
+    traiter_fichier(fichier)
 
 
 if __name__ == "__main__":
